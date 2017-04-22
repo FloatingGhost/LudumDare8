@@ -5,8 +5,15 @@ Game.prototype = {
   towers: null,
   notes: null,
   volText: null,
+  powerUse: null,
   select: null,
   river: null,
+
+  // Buttons
+  sineButton: null,
+  constantButton: null,
+  buttonSelected: null,
+  towerToPlace: -1,
 
   init: function() {
     setCurrency(100);
@@ -22,6 +29,9 @@ Game.prototype = {
     game.load.image("AOE", "../res/img/AOE.png");
     game.load.image("Select", "../res/img/Select.png");
     game.load.image("bg", "../res/img/BG.png");
+    game.load.image("sineButton", "../res/img/SineButton.png");
+    game.load.image("constantButton", "../res/img/ConstantButton.png");
+    game.load.image("buttonSelect", "../res/img/ButtonSelect.png");
   },
 
   create: function() {
@@ -46,26 +56,67 @@ Game.prototype = {
         this.select.selected = clickedOn.first;
       } else {
         if (!this.river.input.pointerOver()) {
-          this.spawnTower(this.towers);
+          // Butt
+          if (this.constantButton.input.pointerOver()) {
+            this.buttonSelected.x = this.constantButton.x;
+            this.buttonSelected.y = this.constantButton.y;
+            this.towerToPlace = 1;
+          } else if (this.sineButton.input.pointerOver()) {
+            this.buttonSelected.x = this.sineButton.x;
+            this.buttonSelected.y = this.sineButton.y;
+            this.towerToPlace = 2;
+          } else {
+            if (this.towerToPlace != -1)         
+              this.spawnTower(this.towers);
+          }
         }
       }
     });
     this.volText = game.add.text(0,0,"Volume at mouse: 0 dB");
+    this.powerUse = game.add.text(0, 550, "Power Usage: 0 w");
     this.select = game.add.sprite(-100, -100, "Select");
     this.select.anchor.setTo(0.5, 0.5);
+
+    // Add buttons
+    this.constantButton = game.add.sprite(700, 550, "constantButton");
+    this.sineButton     = game.add.sprite(750, 550, "sineButton");
+    this.constantButton.inputEnabled = true;
+    this.sineButton.inputEnabled = true;
+    this.buttonSelected = game.add.sprite(-100, -100, "buttonSelect");
   },
 
   update: function() {
     // Get the volume at the current mouse position
-    
     var vol = this.getVolAt(game.input.activePointer);
-    this.volText.text = "Volume at mouse: "+vol+" dB"
+    this.volText.text = "Volume at mouse: "+Number(vol).toFixed(2)+" dB"
+    var power = this.towers.children.map((tower)=>(tower.wave.powerUse)).sum()
+    this.powerUse.text = "Power Usage: "+Number(power).toFixed(2)+" w";
+  
+    // Check for power surge
+    if (power > 5) {
+      this.towers.forEach((t)=>{t.wave.resetWave()});
+    }
 
     this.boats.forEach((boat) => {
       boat.rotation = Phaser.Math.angleBetweenPoints(
                         new Phaser.Point(0,0),
                         new Phaser.Point(boat.deltaX, boat.deltaY))
+
+      // Deal damage
+      boat.health -= this.getVolAt(boat);
+      boat.healthIndicator.clear();
+      boat.healthIndicator.beginFill(0xFF0000);
+      boat.healthIndicator.drawRect(boat.x-50, boat.y-50, 100, 20);
+      boat.healthIndicator.beginFill(0x00FF00);
+      boat.healthIndicator.drawRect(boat.x-49, boat.y-49, boat.health, 18);
+      boat.healthIndicator.endFill();
     });
+
+    this.towers.forEach((tower) => {
+      tower.wave.update();
+      tower.towerAOE.alpha = tower.wave.output / 10;
+    });
+
   },
 
   getVolAt: function(point) {
@@ -75,7 +126,7 @@ Game.prototype = {
       (tower) => (getAbsoluteDistance(point,
                                       tower) <= 100*tower.range));
     var s = 0;
-    inRange.list.forEach((i)=>(s+=i.power));
+    inRange.list.forEach((i)=>(s+=i.wave.output));
     return s;
   },
 
@@ -92,6 +143,9 @@ Game.prototype = {
     t.interpolation(Phaser.Math.catmullRomInterpolation);
     t.onComplete.add(this.killBoat);
     thisBoat.tweenie = t;
+    thisBoat.health = 100;
+    thisBoat.healthIndicator = game.add.graphics(0,0);
+    
     t.start();
   },
 
@@ -107,6 +161,14 @@ Game.prototype = {
     thisTow.anchor.setTo(0.5, 0.5);
     thisTow.range = 1;
     thisTow.power = 1;
+    switch (this.towerToPlace) {
+      case 1:
+        thisTow.wave  = new waveBehaviour(waves.CONSTANT, 1);
+        break;
+      case 2:
+        thisTow.wave  = new waveBehaviour(waves.SINE, 1, 1, 0);
+        break;
+    }
     thisTow.towerAOE = game.add.sprite(game.input.activePointer.x,
                                        game.input.activePointer.y, "AOE")
     thisTow.towerAOE.alpha = 0.1;
