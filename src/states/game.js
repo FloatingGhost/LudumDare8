@@ -97,7 +97,7 @@ Game.prototype = {
       this.towers.forEach((t)=>{t.wave.resetWave()});
     }
 
-    this.boats.forEach((boat) => {
+    this.boats.forEachAlive((boat) => {
       boat.rotation = Phaser.Math.angleBetweenPoints(
                         new Phaser.Point(0,0),
                         new Phaser.Point(boat.deltaX, boat.deltaY))
@@ -152,6 +152,7 @@ Game.prototype = {
   killBoat: function(boat) {
     console.log("BOAT DYING");
     boat.kill();
+    boat.healthIndicator.clear();
   },
 
   spawnTower: function(tGroup) {
