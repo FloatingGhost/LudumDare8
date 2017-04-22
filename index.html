@@ -1,0 +1,22 @@
+<html>
+  <h1>Ludum Dare 38</h1>
+
+  <div id="game" />
+
+  <script src="lib/phaser.js"></script>
+
+  <!-- DATA -->
+  <script src="src/levels.js"></script>
+
+  <!-- States -->
+  <script src="src/states/menu.js"></script>
+  <script src="src/states/game.js"></script>
+
+  <script>
+    console.log("off we go...");
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, "game");
+    game.state.add("Game", Game);
+    game.state.add("Menu", Menu, true);
+  </script>
+
+</html>
