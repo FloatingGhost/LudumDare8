@@ -37,28 +37,28 @@ Game.prototype = {
   },
 
   preload: function() {
-    game.load.image("river", "../res/img/Level1BG.png");
-    game.load.image("boat", "../res/img/Boat.png");
-    game.load.spritesheet("tower", "../res/img/DollA.png",40,40);
-    game.load.spritesheet("eye", "../res/img/DollB.png", 40,40);
-    game.load.image("gun", "../res/img/Gun.png");
-    game.load.image("note", "../res/img/Note.png");
-    game.load.image("rider", "../res/img/Rider.png");
-    game.load.image("AOE", "../res/img/AOE.png");
-    game.load.image("Select", "../res/img/Select.png");
-    game.load.image("bg", "../res/img/Level1Stage.png");
-    game.load.image("sineButton", "../res/img/SineButton.png");
-    game.load.image("constantButton", "../res/img/ConstantButton.png");
-    game.load.image("buttonSelect", "../res/img/ButtonSelect.png");
-    game.load.image("powerUp", "../res/img/PowerUp.png");
-    game.load.image("rangeUp", "../res/img/RangeUp.png");
-    game.load.image("togglePow", "../res/img/TogglePower.png");
-    game.load.image("powerSymbol", "../res/img/PowerSymbol.png");
-    game.load.image("speakerSymbol", "../res/img/SpeakerSmybol.png");
-    game.load.image("surgeIcon", "../res/img/SurgeIcon.png");
-    game.load.image("powerIcon", "../res/img/OffIcon.png");
-    game.load.image("increment", "../res/img/Increment.png");
-    game.load.image("decrement", "../res/img/Decrement.png");
+    game.load.image("river", "res/img/Level1BG.png");
+    game.load.image("boat", "res/img/Boat.png");
+    game.load.spritesheet("tower", "res/img/DollA.png",40,40);
+    game.load.spritesheet("eye", "res/img/DollB.png", 40,40);
+    game.load.image("gun", "res/img/Gun.png");
+    game.load.image("note", "res/img/Note.png");
+    game.load.image("rider", "res/img/Rider.png");
+    game.load.image("AOE", "res/img/AOE.png");
+    game.load.image("Select", "res/img/Select.png");
+    game.load.image("bg", "res/img/Level1Stage.png");
+    game.load.image("sineButton", "res/img/SineButton.png");
+    game.load.image("constantButton", "res/img/ConstantButton.png");
+    game.load.image("buttonSelect", "res/img/ButtonSelect.png");
+    game.load.image("powerUp", "res/img/PowerUp.png");
+    game.load.image("rangeUp", "res/img/RangeUp.png");
+    game.load.image("togglePow", "res/img/TogglePower.png");
+    game.load.image("powerSymbol", "res/img/PowerSymbol.png");
+    game.load.image("speakerSymbol", "res/img/SpeakerSmybol.png");
+    game.load.image("surgeIcon", "res/img/SurgeIcon.png");
+    game.load.image("powerIcon", "res/img/OffIcon.png");
+    game.load.image("increment", "res/img/Increment.png");
+    game.load.image("decrement", "res/img/Decrement.png");
   },
 
   create: function() {
