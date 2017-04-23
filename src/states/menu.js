@@ -5,8 +5,8 @@ Menu.prototype = {
   },
 
   preload: function() {
-    game.load.image("bg", "../res/img/Title.png");
-    game.load.image("bt", "../res/img/StartButton.png");
+    game.load.image("bg", "res/img/Title.png");
+    game.load.image("bt", "res/img/StartButton.png");
   },
 
   create: function() {
