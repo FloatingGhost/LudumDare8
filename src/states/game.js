@@ -24,9 +24,10 @@ Game.prototype = {
   freqDec: null,
   offInc: null,
   offDec: null,
-
+  money: null,
   // Ui shading
   buttonBar: null,
+  lives: {count:5, text:null},
 
   init: function() {
     setCurrency(100);
@@ -77,9 +78,6 @@ Game.prototype = {
     this.buttonBar.beginFill(0x000000);
     this.buttonBar.drawRect(0, 540, 800, 60);
     this.buttonBar.endFill();
-
-    // TEST: Make a boat to make sure it works
-    this.spawnBoat();
 
     // Bind click check
     // Is context-sensitive
@@ -191,6 +189,7 @@ Game.prototype = {
     this.powerUse = game.add.text(250, 550, "Power Usage: 0 w");
     this.select = game.add.sprite(-100, -100, "Select");
     this.select.anchor.setTo(0.5, 0.5);
+    this.lives.text = game.add.text(680, 0, "Lives: "+this.lives.count);
 
     // Add buttons
     this.constantButton = game.add.sprite(700, 550, "constantButton");
@@ -209,7 +208,7 @@ Game.prototype = {
     this.powerUp = game.add.sprite(450, 550, "powerUp");
     this.togglePow = game.add.sprite(350, 550, "togglePow");
     this.rangeUp = game.add.sprite(400, 550, "rangeUp");
-
+    this.money = game.add.text(0,0,"Money: "+getCurrency())
     // And sine UI
     this.offInc = game.add.sprite(550, 550, "increment");
     this.offInc.label = game.add.text(520, 550, "0");
@@ -217,6 +216,7 @@ Game.prototype = {
     this.freqInc = game.add.sprite(650, 550, "increment");
     this.freqInc.label = game.add.text(620, 550, "0");
     this.freqDec = game.add.sprite(650, 570, "decrement");     
+
     // Make them initially invisible
     this.powerUp.alpha = this.togglePow.alpha = this.rangeUp.alpha = 0;
     this.offInc.alpha = this.offDec.alpha = 0;
@@ -231,6 +231,14 @@ Game.prototype = {
     this.offDec.inputEnabled = true;
     this.freqInc.inputEnabled = true;
     this.freqDec.inputEnabled = true;
+
+    console.log("MAIN :: LOAD COMPLETE.");
+    // LOAD LEVEL
+    this.loadLevel();
+  },
+
+  loadLevel: function() {
+    this.spawnBoats(Levels.boats[0]); 
   },
 
   update: function() {
@@ -238,6 +246,7 @@ Game.prototype = {
     var vol = this.getVolAt(game.input.activePointer);
     this.volText.text = Number(vol).toFixed(2)+" dB"
     var power = this.towers.children.map((tower)=>(tower.wave.powerUse)).sum()
+    this.money.text = "Money: "+getCurrency();
     this.powerUse.text = Number(power).toFixed(2)+" w";
   
     // Check for power surge
@@ -256,7 +265,10 @@ Game.prototype = {
       // Deal damage
       boat.health -= this.getVolAt(new Phaser.Point(boat.centerX, boat.centerY));
       if (boat.health <= 0) {
-        this.killBoat(boat);
+        boat.kill();
+        boat.healthIndicator.clear();
+        modifyCurrency(10);
+        boat.tweenie.stop();
       }
       if (boat.health > 0) {
         boat.healthIndicator.clear();
@@ -305,23 +317,41 @@ Game.prototype = {
     return s;
   },
 
-  spawnBoat: function() {
-    var thisBoat = this.boats.create(850, 400, "boat");
+  spawnBoat: function(b) {
+    console.log("LVLMAN :: SPAWNING...");
+    var thisBoat = this.boats.create(Levels.startPos[0].x, 
+                                     Levels.startPos[0].y, 
+                                     "boat");
     thisBoat.anchor.setTo(0.5,0.5);
     // Start the boat off on its magical journey to the asylum
     var t = game.add.tween(thisBoat).to( 
-      {x: Levels.coords[0].map((x)=>(x.x)),
-       y: Levels.coords[0].map((x)=>(x.y))},
-      16000,
+      {x: Levels.path[0].map((x)=>(x.x)),
+       y: Levels.path[0].map((x)=>(x.y))},
+      16000 / b.speed,
       "Linear"
     );
     t.interpolation(Phaser.Math.catmullRomInterpolation);
-    t.onComplete.add(this.killBoat);
+    t.onComplete.add(this.killBoat, this);
     thisBoat.tweenie = t;
-    thisBoat.health = 100;
+    thisBoat.health = b.hp;
     thisBoat.healthIndicator = game.add.graphics(0,0);
    
     t.start();
+  },
+
+  spawnBoats: function(bArray) {
+    if (bArray.length == 0) { 
+      console.log("LVLMAN :: NO BOATS TO SPAWN. ENDING.")
+      return;
+    }
+    console.log("LVLMAN :: SPAWNING BOAT");
+    console.log(bArray[0]);
+    this.spawnBoat(bArray[0]);
+
+    console.log("LVLMAN :: DELAY "+bArray[0].delay);
+    game.time.events.add(Phaser.Timer.SECOND * bArray[0].delay, 
+                         this.spawnBoats.bind(this, bArray.tail()), 
+                         this);
   },
 
   killBoat: function(boat) {
@@ -330,6 +360,9 @@ Game.prototype = {
     boat.healthIndicator.clear();
     if (boat.health <= 0) {
       modifyCurrency(10);
+    } else {
+      this.lives.count--;
+      this.lives.text.text = "Lives: "+this.lives.count;
     }
   },
 
@@ -348,9 +381,11 @@ Game.prototype = {
     switch (this.towerToPlace) {
       case 1:
         thisTow.wave  = new waveBehaviour(waves.CONSTANT, 1);
+        modifyCurrency(-20);
         break;
       case 2:
         thisTow.wave  = new waveBehaviour(waves.SINE, 1, 1, 0);
+        modifyCurrency(-15);
         break;
     }
     

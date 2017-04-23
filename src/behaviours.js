@@ -122,6 +122,12 @@ if (!Array.prototype.sum){
     };
 }
 
+if (!Array.prototype.tail){
+    Array.prototype.tail = function() {
+      return this.filter((a,i)=>(i!=0))
+    };
+}
+
 var getAbsoluteDistance = function(s1, s2) {
   return Math.sqrt(
             Math.pow(Math.abs(s1.centerX - s2.x), 2) + 

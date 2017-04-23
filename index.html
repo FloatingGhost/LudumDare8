@@ -14,11 +14,13 @@
   <!-- States -->
   <script src="src/states/menu.js"></script>
   <script src="src/states/game.js"></script>
+  <script src="src/states/manager.js"></script>
 
   <script>
     console.log("off we go...");
-    var game = new Phaser.Game(800, 600, Phaser.AUTO, "game");
+    var game = new Phaser.Game(800, 600, Phaser.CANVAS, "game");
     game.state.add("Game", Game);
+    game.state.add("Manager", Manager);
     game.state.add("Menu", Menu, true);
   </script>
 
