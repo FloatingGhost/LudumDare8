@@ -4,12 +4,18 @@ Menu.prototype = {
   init: function() {
   },
 
-  preload: function() {},
+  preload: function() {
+    game.load.image("bg", "../res/img/Title.png");
+    game.load.image("bt", "../res/img/StartButton.png");
+  },
 
   create: function() {
+    game.add.sprite(0,0,"bg");
     console.log("MENU :: GAME INITIALISED");
-    var style = { font: "bold 32px Arial", fill: "#fff", boundsAlignH: "center", boundsAlignV: "middle" }; 
-    game.add.text(game.world.centreX,game.world.centreY,"READY",style);
-    game.state.start("Manager");
-  }
+    var x = game.add.sprite(100, 300, "bt");
+    x.inputEnabled = true;
+    game.input.onDown.add(this.go, this);
+  },
+  go: function() { game.state.start("Manager");}
+  
 }
