@@ -6,25 +6,25 @@ var towerFire = function(numberOfShots, noteArray, tower, boat) {
 }
 
 var towers = {
-  SINGLESHOT: {
-    reload: 100,
-    damage: 10,
+  CONSTANT: {
+    power: 1,
     aim: shootFirst, // Generic tower
-    fire: towerFire.bind(this, 1), 
-    icon: "singleshot",
+    icon: "tower",
+    angle: 60,
+    range: 1,
+    cost: 15,
+    powerUse: 1.2,
+    wave: waves.CONSTANT,
   },
 
-  AREA: {
-    reload: 1,
-    damage: 1,
-    aim: shootFirst, //Will activate if any in range
-    icon: "areashot",
-  },
-
-  STARE: {
-    reload: 1,
-    damage: 2,
-    aim: shootClosest, // Stare at closest victim  
-    icon: "stare",
-  },
+  SINE: {
+    power: 1.2,
+    aim: shootFirst,
+    icon: "eye",
+    angle: 45,
+    range: 1,
+    cost: 10, 
+    powerUse: 1,
+    wave: waves.SINE,
+  }
 }

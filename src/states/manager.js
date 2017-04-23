@@ -13,7 +13,10 @@ Manager.prototype = {
     Levels.path.shift();
     Levels.boats.shift();
     Levels.energyCap.shift();
-    Levels.energyCap.shift();
+    Levels.lives.shift();
+    Levels.money.shift();
+    console.log("LVLMAN :: PARAMS ::",
+                Levels.energyCap)
     game.state.start("Game");
   },
 }

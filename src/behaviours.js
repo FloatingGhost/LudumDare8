@@ -56,6 +56,7 @@ waveBehaviour.prototype = {
 
   togglePower: function() {
     this.isOff = !this.isOff;
+    console.log("TOWER ",this.isOff);
   },
 
   incrementFreq: function() {
@@ -82,6 +83,7 @@ waveBehaviour.prototype = {
     // On tick, update waveform
     if (this.zeroTicks) {
       this.output = 0;
+      this.powerUse = 0;
       this.zeroTicks--;
       return;    
     }
@@ -106,7 +108,8 @@ waveBehaviour.prototype = {
     // Used if power goes over maximum threshold
     // We'll hold at 0 for 100 ticks
     // Then carry on
-    this.zeroTicks = 100;
+    this.powerUse = 0;
+    this.zeroTicks = BLACKOUT;
   }
 }
 
@@ -140,7 +143,7 @@ var filterByDistance = function(tower, boatGroup, maxRange) {
 };
 
 var shootFirst = function(tower, boatGroup) {
-  var dist = filterByDistance(tower, boatGroup, 110*(1+tower.wave.rangeModifier));
+  var dist = filterByDistance(tower, boatGroup, TARGETING_RANGE*(1+tower.wave.rangeModifier));
   return dist.first;
 };
 

@@ -1,0 +1,4 @@
+var RANGE = 100;
+var TARGETING_RANGE =150;
+var SPEED_MS = 32000;
+var BLACKOUT = 100;
